@@ -1,0 +1,51 @@
+---
+- name: Update system
+  hosts: all
+  become: true
+  tasks:
+    - apt: upgrade=full
+
+- name: Install Docker
+  hosts: all
+  become: true
+  tasks:
+    - name: Install pip
+      apt: name={{ item }} update_cache=yes
+      with_items:
+        - python-pip
+
+    - name: Install docker-py
+      pip: name=docker-py
+
+    - name: Install Docker
+      shell: curl -sSL https://get.docker.com/ | sh
+
+- name: Install Jenkins
+  hosts: all
+  become: true
+  tasks:
+    - name: Construi Slave
+      docker:
+        image: lstephen/jenkins-construi-slave:11.27
+        name: slave
+        volumes:
+          - "/var/jenkins:/var/jenkins"
+          - "/var/run/docker.sock:/var/run/docker.sock"
+
+    - name: Jenkins Master
+      docker:
+        env:
+          TZ: America/Los_Angeles
+        name: jenkins
+        image: lstephen/jenkins-mylonelybear:28
+        links:
+          - slave
+        ports:
+          - "80:8080"
+        restart_policy: always
+        state: reloaded
+        volumes:
+          - "/var/jenkins:/var/jenkins"
+
+
+
