@@ -37,7 +37,7 @@
         env:
           TZ: America/Los_Angeles
         name: jenkins
-        image: lstephen/jenkins-mylonelybear:28
+        image: lstephen/jenkins-mylonelybear:27
         links:
           - slave
         ports:
