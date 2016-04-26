@@ -3,6 +3,8 @@
   hosts: all
   become: true
   tasks:
+    - file: path=/var/lib/apt/lists state=absent
+    - file: path=/var/lib/apt/lists state=directory
     - apt: upgrade=full
 
 - name: Install Docker
